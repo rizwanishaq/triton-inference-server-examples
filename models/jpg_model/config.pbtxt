@@ -16,7 +16,7 @@ output [
   }
 
 ]
-instance_group [{count: 1, kind: KIND_CPU}]
+instance_group [{count: 5, kind: KIND_CPU}]
 
 sequence_batching {
   max_sequence_idle_microseconds: 60000000

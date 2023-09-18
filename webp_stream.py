@@ -186,15 +186,15 @@ def run(args):
                 if not ret:
                     break
 
-                start = perf_counter()  # Record start time
+                # start = perf_counter()  # Record start time
                 output_image = stream(frame)
-                logging.info(
-                    f"[✅] Done in {(perf_counter() - start) * 1000:.2f}ms")
+                # logging.info(
+                #     f"[✅] Done in {(perf_counter() - start) * 1000:.2f}ms")
 
-                cv2.imshow(f'{stream.sequence_id}', output_image)
+                # cv2.imshow(f'{stream.sequence_id}', output_image)
 
-                if cv2.waitKey(5) & 0xFF == 27:
-                    break
+                # if cv2.waitKey(5) & 0xFF == 27:
+                #     break
         except Exception as e:
             logger.exception(
                 f'[❌] Stream: {stream.sequence_id} - Stopped - Error: {e}')
