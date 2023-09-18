@@ -1,0 +1,51 @@
+name: "jpg_model"
+backend: "python"
+max_batch_size: 0
+input [
+  {
+    name: "image"
+    data_type: TYPE_STRING
+    dims: [ 1 ]
+  }
+]
+output [
+  {
+    name: "output_image"
+    data_type: TYPE_STRING
+    dims: [ 1 ]
+  }
+
+]
+instance_group [{count: 1, kind: KIND_CPU}]
+
+sequence_batching {
+  max_sequence_idle_microseconds: 60000000
+  control_input {
+    name: "START"
+    control {
+      kind: CONTROL_SEQUENCE_START
+      int32_false_true: [0, 1]
+    }
+  }
+  control_input {
+    name: "READY"
+    control {
+      kind: CONTROL_SEQUENCE_READY
+      int32_false_true: [0, 1]
+    }
+  }
+  control_input {
+    name: "END"
+    control {
+      kind: CONTROL_SEQUENCE_END
+      int32_false_true: [0, 1]
+    }
+  }
+  control_input {
+    name: "CORRID"
+    control {
+      kind: CONTROL_SEQUENCE_CORRID
+      data_type: TYPE_UINT64
+    }
+  }
+}
