@@ -1,9 +1,7 @@
 import numpy as np
 import json
 import triton_python_backend_utils as pb_utils
-from uuid import uuid4
-
-from typing import List
+import time
 
 
 class TritonPythonModel:
@@ -40,6 +38,16 @@ class TritonPythonModel:
                 - model_name (str): Model name.
         """
 
+        # self.metric_family = pb_utils.MetricFamily(
+        #     name="requests_process_latency_ns",
+        #     description="Cumulative time spent processing requests",
+        #     kind=pb_utils.MetricFamily.COUNTER,  # or pb_utils.MetricFamily.GAUGE
+        # )
+
+        # self.metric = self.metric_family.Metric(
+        #     labels={"model": "python_backend_batch", "version": "1"}
+        # )
+
         self.logger = pb_utils.Logger
         self.model_config = model_config = json.loads(args['model_config'])
         output_image_config = pb_utils.get_output_config_by_name(
@@ -60,9 +68,10 @@ class TritonPythonModel:
         """
         responses = []
         uid_batch = ''
-        # self.logger.log(f' {dir(requests)}', self.logger.INFO)
-        self.logger.log(f'Batch Size : {len(requests)}', self.logger.INFO)
 
+        self.logger.log(f'Batch Size : {len(requests)}', self.logger.INFO)
+        # Record the start time of processing the requests
+        # start_ns = time.time_ns()
         for request in requests:
             uid = pb_utils.get_input_tensor_by_name(request, "uid")
             uid = uid.as_numpy()[0][0].decode()
@@ -85,6 +94,25 @@ class TritonPythonModel:
             )
 
             responses.append(inference_response)
+
+        # Record the end time of processing the requests
+        # end_ns = time.time_ns()
+
+        # Update metric to track cumulative requests processing latency.
+        # There are three operations you can do with the Metric object:
+        #   - Metric.increment(value): Increment the value of the metric by
+        #       the given value. The type of the value is double. The 'COUNTER'
+        #       kind does not support negative value.
+        #   - Metric.set(value): Set the value of the metric to the given
+        #       value. This operation is only supported in 'GAUGE' kind. The
+        #       type of the value is double.
+        #   - Metric.value(): Get the current value of the metric.
+        # self.metric.increment(end_ns - start_ns)
+
+        # self.logger.log_info(
+        #     "Cumulative requests processing latency: {}".format(
+        #         self.metric.value())
+        # )
 
         return responses
 

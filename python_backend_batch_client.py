@@ -1,13 +1,10 @@
-import cv2
 import numpy as np
-import subprocess
-import logging
 from uuid import uuid4
 from tritonclient.utils import np_to_triton_dtype
 import tritonclient.grpc as grpcclient
-from typing import List
-import threading
+
 from concurrent.futures import ThreadPoolExecutor
+import requests
 
 # Constants for Model Names and URLs
 DEFAULT_MODEL_NAME = "python_backend_batch"
@@ -27,6 +24,10 @@ def client_thread(client: "TritonClient", uid: str) -> None:
 
 
 class TritonClient:
+    """
+    A client for communicating with Triton Inference Server.
+    """
+
     def __init__(self, model_name: str = DEFAULT_MODEL_NAME, triton_url: str = DEFAULT_TRITON_URL) -> None:
         """
         Initializes the Triton client.
@@ -71,10 +72,22 @@ class TritonClient:
         output_uid = response.as_numpy("uid")[0]
         return output_uid
 
+    def get_metrics(self):
+        """
+        Retrieves metrics from Triton Inference Server.
+
+        Returns:
+            str: Metrics in text format.
+        """
+        metrics_url = "http://localhost:8002/metrics"
+        r = requests.get(metrics_url)
+        r.raise_for_status()
+        return r.text
+
 
 if __name__ == "__main__":
     # Create 20 clients and corresponding UIDs
-    num_clients = 7
+    num_clients = 5
     clients = [TritonClient() for _ in range(num_clients)]
     uids = [f'uid_{i}' for i in range(num_clients)]
 
