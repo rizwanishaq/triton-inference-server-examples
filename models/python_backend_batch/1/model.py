@@ -40,6 +40,7 @@ class TritonPythonModel:
                 - model_name (str): Model name.
         """
 
+        self.logger = pb_utils.Logger
         self.model_config = model_config = json.loads(args['model_config'])
         output_image_config = pb_utils.get_output_config_by_name(
             model_config, "uid")
@@ -48,7 +49,7 @@ class TritonPythonModel:
         self.output_tensor_dtype = pb_utils.triton_string_to_numpy(
             output_image_config['data_type'])
 
-    def execute(self, requests: List[pb_utils.InferenceRequest]) -> List[pb_utils.InferenceResponse]:
+    def execute(self, requests: list) -> list:
         """Process inference requests.
 
         Args:
@@ -57,18 +58,26 @@ class TritonPythonModel:
         Returns:
             list: List of pb_utils.InferenceResponse.
         """
-        u_i_d = str(uuid4())  # Convert UUID to string
         responses = []
+        uid_batch = ''
+        # self.logger.log(f' {dir(requests)}', self.logger.INFO)
+        self.logger.log(f'Batch Size : {len(requests)}', self.logger.INFO)
 
         for request in requests:
             uid = pb_utils.get_input_tensor_by_name(request, "uid")
             uid = uid.as_numpy()[0][0].decode()
 
-            uid = f'{u_i_d}_{uid}'
+            uid_batch = f'{uid_batch}_{uid}'
+
+        for request in requests:
+            uid = pb_utils.get_input_tensor_by_name(request, "uid")
+            uid = uid.as_numpy()[0][0].decode()
+
+            uid_return = f'{uid}_{uid_batch}'
 
             output_tensor = pb_utils.Tensor(
                 "uid",
-                np.array([uid], dtype=self.output_tensor_dtype),
+                np.array([uid_return], dtype=self.output_tensor_dtype),
             )
 
             inference_response = pb_utils.InferenceResponse(

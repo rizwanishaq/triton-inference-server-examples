@@ -74,8 +74,9 @@ class TritonClient:
 
 if __name__ == "__main__":
     # Create 20 clients and corresponding UIDs
-    clients = [TritonClient() for _ in range(20)]
-    uids = [f'uid_{i}' for i in range(20)]
+    num_clients = 7
+    clients = [TritonClient() for _ in range(num_clients)]
+    uids = [f'uid_{i}' for i in range(num_clients)]
 
     # Use ThreadPoolExecutor for concurrent execution
     with ThreadPoolExecutor(max_workers=20) as executor:

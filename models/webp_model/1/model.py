@@ -39,7 +39,7 @@ class TritonPythonModel:
                 - model_version (str): Model version.
                 - model_name (str): Model name.
         """
-
+        self.logger = pb_utils.Logger
         self.model_config = model_config = json.loads(args['model_config'])
         output_image_config = pb_utils.get_output_config_by_name(
             model_config, "output_image")
@@ -48,7 +48,7 @@ class TritonPythonModel:
         self.output_tensor_dtype = pb_utils.triton_string_to_numpy(
             output_image_config['data_type'])
 
-    def execute(self, requests: List[pb_utils.InferenceRequest]) -> List[pb_utils.InferenceResponse]:
+    def execute(self, requests):
         """Process inference requests.
 
         Args:
@@ -67,6 +67,12 @@ class TritonPythonModel:
                 request, "END").as_numpy()[0]
 
             if end_flag or start_flag:
+                # Get sequence ID and log the action
+                sequence_id = pb_utils.get_input_tensor_by_name(
+                    request, "CORRID").as_numpy()[0]
+                action = "started" if start_flag else "stopped"
+                self.logger.log(
+                    f'Stream {sequence_id} {action}', self.logger.INFO)
                 inference_response = pb_utils.InferenceResponse(
                     output_tensors=[])
 
