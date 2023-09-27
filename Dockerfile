@@ -30,3 +30,4 @@ RUN pip install av
 RUN pip install kornia==0.6.8
 RUN pip install yacs==0.1.8
 RUN pip install pydub==0.25.1
+RUN pip install fasttext
