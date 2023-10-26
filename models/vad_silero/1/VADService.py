@@ -2,7 +2,6 @@ import os
 import numpy as np
 import torch
 from utils import VADIterator
-import triton_python_backend_utils as pb_utils
 
 
 class VoiceActivityDetector:
@@ -13,8 +12,8 @@ class VoiceActivityDetector:
         sampling_rate (int, optional): Sampling rate of the audio (default: 16000).
         model_path (str, optional): Path to the pre-trained VAD model (default: "pretrainedmodel/silero_vad.jit").
     """
-    FRAME_SIZE: int = 320
-    BUFFER_SIZE: int = 512
+    FRAME_SIZE: int = 320     # 20ms with sampling rate 16000
+    BUFFER_SIZE: int = 512    # Buffer size for processing the audio for the model
 
     def __init__(self, sampling_rate: int = 16000, model_path: str = "pretrainedmodel/silero_vad.jit"):
         """
@@ -24,7 +23,6 @@ class VoiceActivityDetector:
             sampling_rate (int, optional): Sampling rate of the audio (default: 16000).
             model_path (str, optional): Path to the pre-trained VAD model (default: "pretrainedmodel/silero_vad.jit").
         """
-        self.logger: pb_utils.Logger = pb_utils.Logger
         self.sampling_rate: int = sampling_rate
         self.model_path: str = os.path.join(
             "/models/vad_silero/1/", model_path)
@@ -137,9 +135,8 @@ class VoiceActivityDetector:
             chunk (np.ndarray): Audio chunk as an ndarray.
 
         Returns:
-            np.ndarray: Audio chunk of size self.frame_size or None.
+            np.ndarray: Audio chunk of size self.FRAME_SIZE or None.
         """
-
         self.buffer_audio(chunk)
 
         chunk_for_processing = self.convert_to_float32(self.input_audio_buffer)
