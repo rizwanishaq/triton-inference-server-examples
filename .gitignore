@@ -3,3 +3,4 @@ Felipe.mp4
 run_triton_server.sh
 models/t2t_lang/1/models
 models/denoise_waveUnet/
+models/decoupled/nodejs/node_modules
