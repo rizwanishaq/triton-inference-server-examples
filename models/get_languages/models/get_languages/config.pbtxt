@@ -1,0 +1,29 @@
+name: "get_languages"
+backend: "python"
+max_batch_size: 16
+input [
+  {
+    name: "languages_list"
+    data_type: TYPE_STRING
+    dims: [1]
+  }
+]
+output [
+  {
+    name: "languages"
+    data_type: TYPE_STRING
+    dims: [ 1 ]
+  }
+]
+
+
+dynamic_batching {
+  max_queue_delay_microseconds: 1000
+}
+
+instance_group [
+  {
+    count: 1
+    kind: KIND_CPU
+  }
+]

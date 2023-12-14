@@ -1,0 +1,26 @@
+name: "requests_counter"
+backend: "python"
+max_batch_size: 0
+
+input [
+  {
+    name: "request_type"
+    data_type: TYPE_STRING
+    dims: [1]
+  }
+]
+output [
+  {
+    name: "number_of_requests"
+    data_type: TYPE_INT16
+    dims: [1]
+  }
+]
+
+
+instance_group [
+  {
+    count: 1
+    kind: KIND_CPU
+  }
+]
